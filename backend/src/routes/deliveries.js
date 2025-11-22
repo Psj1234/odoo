@@ -172,6 +172,19 @@ router.post('/', async (req, res, next) => {
       data: delivery
     });
   } catch (error) {
+    console.error('Error creating delivery:', error);
+    if (error.code === 'P2002') {
+      return res.status(400).json({
+        success: false,
+        error: 'Delivery with this document number already exists'
+      });
+    }
+    if (error.code === 'P2003') {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid warehouse, product, or location ID'
+      });
+    }
     next(error);
   }
 });
