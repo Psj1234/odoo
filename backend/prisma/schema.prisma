@@ -1,0 +1,337 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  INVENTORY_MANAGER
+  WAREHOUSE_STAFF
+}
+
+enum DocumentStatus {
+  PENDING
+  VALIDATED
+  CANCELLED
+}
+
+enum LocationType {
+  STORAGE
+  PICKING
+  RECEIVING
+  SHIPPING
+}
+
+enum LedgerType {
+  RECEIPT
+  DELIVERY
+  TRANSFER_IN
+  TRANSFER_OUT
+  ADJUSTMENT
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  phone     String   @unique
+  name      String?
+  role      UserRole @default(WAREHOUSE_STAFF)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdReceipts    Receipt[]      @relation("ReceiptCreator")
+  validatedReceipts  Receipt[]      @relation("ReceiptValidator")
+  createdDeliveries  Delivery[]     @relation("DeliveryCreator")
+  validatedDeliveries Delivery[]    @relation("DeliveryValidator")
+  createdTransfers   Transfer[]     @relation("TransferCreator")
+  validatedTransfers Transfer[]     @relation("TransferValidator")
+  createdAdjustments Adjustment[]
+  ledgerEntries      Ledger[]
+
+  @@index([phone])
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+
+  @@index([name])
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  sku         String    @unique
+  name        String
+  description String?
+  categoryId  Int
+  unit        String    @default("pcs")
+  reorderPoint Int?     @default(10)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  stock       Stock[]
+  receiptItems ReceiptItem[]
+  deliveryItems DeliveryItem[]
+  transferItems TransferItem[]
+  adjustmentItems AdjustmentItem[]
+  ledgerEntries Ledger[]
+
+  @@index([sku])
+  @@index([categoryId])
+  @@index([name])
+}
+
+model Warehouse {
+  id        Int        @id @default(autoincrement())
+  name      String
+  code      String    @unique
+  address   String?
+  phone     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  locations     Location[]
+  receipts      Receipt[]
+  deliveries    Delivery[]
+  fromTransfers Transfer[]  @relation("FromWarehouse")
+  toTransfers   Transfer[]  @relation("ToWarehouse")
+  adjustments   Adjustment[]
+
+  @@index([code])
+}
+
+model Location {
+  id          Int          @id @default(autoincrement())
+  warehouseId Int
+  name        String
+  code        String
+  type        LocationType @default(STORAGE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  warehouse   Warehouse    @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  stock       Stock[]
+  receiptItems ReceiptItem[]
+  deliveryItems DeliveryItem[]
+  transferItemsFrom TransferItem[] @relation("FromLocation")
+  transferItemsTo TransferItem[] @relation("ToLocation")
+  adjustmentItems AdjustmentItem[]
+  ledgerEntries Ledger[]
+
+  @@unique([warehouseId, code])
+  @@index([warehouseId])
+}
+
+model Stock {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  locationId Int
+  quantity   Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locationId])
+  @@index([productId])
+  @@index([locationId])
+  @@index([quantity])
+}
+
+model Receipt {
+  id             Int            @id @default(autoincrement())
+  documentNumber String         @unique
+  warehouseId    Int
+  date           DateTime
+  status         DocumentStatus @default(PENDING)
+  notes          String?
+  createdBy      Int
+  validatedBy    Int?
+  validatedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  warehouse      Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  creator        User           @relation("ReceiptCreator", fields: [createdBy], references: [id])
+  validator      User?          @relation("ReceiptValidator", fields: [validatedBy], references: [id])
+  items          ReceiptItem[]
+
+  @@index([warehouseId])
+  @@index([status])
+  @@index([date])
+}
+
+model ReceiptItem {
+  id         Int      @id @default(autoincrement())
+  receiptId  Int
+  productId  Int
+  locationId Int
+  quantity   Int
+  unitPrice  Decimal  @default(0)
+  createdAt  DateTime @default(now())
+
+  receipt    Receipt  @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([receiptId])
+  @@index([productId])
+}
+
+model Delivery {
+  id             Int            @id @default(autoincrement())
+  documentNumber String         @unique
+  warehouseId    Int
+  date           DateTime
+  customerName   String?
+  status         DocumentStatus @default(PENDING)
+  notes          String?
+  createdBy      Int
+  validatedBy    Int?
+  validatedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  warehouse      Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  creator        User           @relation("DeliveryCreator", fields: [createdBy], references: [id])
+  validator      User?          @relation("DeliveryValidator", fields: [validatedBy], references: [id])
+  items          DeliveryItem[]
+
+  @@index([warehouseId])
+  @@index([status])
+  @@index([date])
+}
+
+model DeliveryItem {
+  id         Int      @id @default(autoincrement())
+  deliveryId Int
+  productId  Int
+  locationId Int
+  quantity   Int
+  unitPrice  Decimal  @default(0)
+  createdAt  DateTime @default(now())
+
+  delivery   Delivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([deliveryId])
+  @@index([productId])
+}
+
+model Transfer {
+  id             Int            @id @default(autoincrement())
+  documentNumber String         @unique
+  fromWarehouseId Int
+  toWarehouseId  Int
+  date           DateTime
+  status         DocumentStatus @default(PENDING)
+  notes          String?
+  createdBy      Int
+  validatedBy    Int?
+  validatedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  fromWarehouse  Warehouse      @relation("FromWarehouse", fields: [fromWarehouseId], references: [id], onDelete: Cascade)
+  toWarehouse    Warehouse      @relation("ToWarehouse", fields: [toWarehouseId], references: [id], onDelete: Cascade)
+  creator        User           @relation("TransferCreator", fields: [createdBy], references: [id])
+  validator      User?          @relation("TransferValidator", fields: [validatedBy], references: [id])
+  items          TransferItem[]
+
+  @@index([fromWarehouseId])
+  @@index([toWarehouseId])
+  @@index([status])
+  @@index([date])
+}
+
+model TransferItem {
+  id             Int      @id @default(autoincrement())
+  transferId     Int
+  productId      Int
+  fromLocationId Int
+  toLocationId   Int
+  quantity       Int
+  createdAt      DateTime @default(now())
+
+  transfer       Transfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  fromLocation   Location @relation("FromLocation", fields: [fromLocationId], references: [id], onDelete: Cascade)
+  toLocation     Location @relation("ToLocation", fields: [toLocationId], references: [id], onDelete: Cascade)
+
+  @@index([transferId])
+  @@index([productId])
+}
+
+model Adjustment {
+  id             Int       @id @default(autoincrement())
+  documentNumber String    @unique
+  warehouseId    Int
+  date           DateTime
+  reason         String
+  createdBy      Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  warehouse      Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  creator        User      @relation(fields: [createdBy], references: [id])
+  items          AdjustmentItem[]
+
+  @@index([warehouseId])
+  @@index([date])
+}
+
+model AdjustmentItem {
+  id             Int      @id @default(autoincrement())
+  adjustmentId   Int
+  productId      Int
+  locationId     Int
+  currentStock   Int
+  physicalCount  Int
+  difference     Int
+  createdAt      DateTime @default(now())
+
+  adjustment     Adjustment @relation(fields: [adjustmentId], references: [id], onDelete: Cascade)
+  product        Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  location       Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([adjustmentId])
+  @@index([productId])
+}
+
+model Ledger {
+  id             Int        @id @default(autoincrement())
+  date           DateTime
+  productId      Int
+  locationId     Int
+  type           LedgerType
+  documentNumber String
+  quantity       Int
+  previousStock  Int
+  newStock       Int
+  userId         Int
+  notes          String?
+  createdAt      DateTime   @default(now())
+
+  product        Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  location       Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  user           User       @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+  @@index([locationId])
+  @@index([type])
+  @@index([date])
+  @@index([documentNumber])
+}
+

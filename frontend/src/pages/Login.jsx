@@ -1,0 +1,123 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
+import { Package } from 'lucide-react';
+
+export default function Login() {
+  const [phone, setPhone] = useState('');
+  const [code, setCode] = useState('');
+  const [step, setStep] = useState('phone'); // 'phone' or 'code'
+  const { requestOTP, login, loading, error } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleRequestOTP = async (e) => {
+    e.preventDefault();
+    const result = await requestOTP(phone);
+    if (result.success) {
+      setStep('code');
+    }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    const result = await login(phone, code);
+    if (result.success) {
+      navigate('/');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Package className="w-12 h-12 text-primary" />
+            <h1 className="text-3xl font-bold text-gray-900">StockMaster</h1>
+          </div>
+          <p className="text-gray-600">Inventory Management System</p>
+        </div>
+
+        <div className="card">
+          {step === 'phone' ? (
+            <form onSubmit={handleRequestOTP}>
+              <h2 className="text-2xl font-semibold mb-6">Login</h2>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+1234567890"
+                  className="input"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Use E.164 format (e.g., +1234567890)
+                </p>
+              </div>
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full btn btn-primary"
+              >
+                {loading ? 'Sending...' : 'Send OTP'}
+              </button>
+              {process.env.NODE_ENV === 'development' && (
+                <p className="mt-4 text-xs text-gray-500 text-center">
+                  Dev mode: Use code 123456
+                </p>
+              )}
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOTP}>
+              <h2 className="text-2xl font-semibold mb-6">Enter OTP</h2>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  OTP Code
+                </label>
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="123456"
+                  className="input"
+                  maxLength={6}
+                  required
+                />
+              </div>
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStep('phone')}
+                  className="flex-1 btn btn-secondary"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 btn btn-primary"
+                >
+                  {loading ? 'Verifying...' : 'Verify & Login'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
