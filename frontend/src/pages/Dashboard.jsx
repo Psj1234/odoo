@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../lib/api';
 import { Package, AlertTriangle, Inbox, Truck, ArrowLeftRight } from 'lucide-react';
+import Analytics from '../components/Analytics';
 
 export default function Dashboard() {
   const [kpis, setKpis] = useState({
@@ -133,6 +134,11 @@ export default function Dashboard() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Analytics & Charts Section */}
+      <div className="mt-8">
+        <Analytics />
       </div>
     </div>
   );

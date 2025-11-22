@@ -1,25 +1,10 @@
 'use client';
-// @ts-nocheck
 
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 
-interface User {
-  id: string;
-  phone: string;
-  name?: string;
-  [key: string]: any;
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  error: string | null;
-}
-
 export function useAuth() {
-  const [state, setState] = useState<AuthState>({
+  const [state, setState] = useState({
     user: null,
     token: null,
     loading: false,
@@ -35,20 +20,20 @@ export function useAuth() {
     }
   }, []);
 
-  const requestOTP = async (phone: string) => {
+  const requestOTP = async (phone) => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       await api.post('/auth/request-otp', { phone });
       setState((prev) => ({ ...prev, loading: false }));
       return { success: true };
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = error.response?.data?.error || 'Failed to send OTP';
       setState((prev) => ({ ...prev, error: errorMessage, loading: false }));
       return { success: false, error: errorMessage };
     }
   };
 
-  const login = async (phone: string, code: string) => {
+  const login = async (phone, code) => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const response = await api.post('/auth/verify-otp', { phone, code });
@@ -61,7 +46,7 @@ export function useAuth() {
 
       setState({ user, token, loading: false, error: null });
       return { success: true };
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = error.response?.data?.error || 'Login failed';
       setState((prev) => ({ ...prev, error: errorMessage, loading: false }));
       return { success: false, error: errorMessage };
@@ -83,4 +68,3 @@ export function useAuth() {
     logout,
   };
 }
-

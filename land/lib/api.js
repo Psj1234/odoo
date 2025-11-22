@@ -1,5 +1,4 @@
 import axios from 'axios';
-// @ts-nocheck
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -35,4 +34,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-

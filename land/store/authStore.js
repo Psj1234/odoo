@@ -1,36 +1,15 @@
 'use client';
 
-'use client';
-// @ts-nocheck
-
 import { create } from 'zustand';
 import api from '@/lib/api';
 
-interface User {
-  id: string;
-  phone: string;
-  name?: string;
-  [key: string]: any;
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  error: string | null;
-  login: (phone: string, code: string) => Promise<{ success: boolean; error?: string }>;
-  requestOTP: (phone: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => void;
-  updateUser: (user: User) => void;
-}
-
-const useAuthStore = create<AuthState>((set) => ({
+const useAuthStore = create((set) => ({
   user: typeof window !== 'undefined' ? (JSON.parse(localStorage.getItem('user') || 'null')) : null,
   token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
   loading: false,
   error: null,
 
-  login: async (phone: string, code: string) => {
+  login: async (phone, code) => {
     set({ loading: true, error: null });
     try {
       const response = await api.post('/auth/verify-otp', { phone, code });
@@ -43,20 +22,20 @@ const useAuthStore = create<AuthState>((set) => ({
       
       set({ user, token, loading: false });
       return { success: true };
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = error.response?.data?.error || 'Login failed';
       set({ error: errorMessage, loading: false });
       return { success: false, error: errorMessage };
     }
   },
 
-  requestOTP: async (phone: string) => {
+  requestOTP: async (phone) => {
     set({ loading: true, error: null });
     try {
       await api.post('/auth/request-otp', { phone });
       set({ loading: false });
       return { success: true };
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = error.response?.data?.error || 'Failed to send OTP';
       set({ error: errorMessage, loading: false });
       return { success: false, error: errorMessage };
@@ -71,7 +50,7 @@ const useAuthStore = create<AuthState>((set) => ({
     set({ user: null, token: null });
   },
 
-  updateUser: (user: User) => {
+  updateUser: (user) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('user', JSON.stringify(user));
     }
@@ -80,4 +59,3 @@ const useAuthStore = create<AuthState>((set) => ({
 }));
 
 export default useAuthStore;
-

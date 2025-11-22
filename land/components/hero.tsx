@@ -19,7 +19,7 @@ export function Hero() {
           <i className="font-light">future</i> growth
         </h1>
         <p className="font-mono text-sm sm:text-base text-foreground/60 text-balance mt-8 max-w-[440px] mx-auto">
-          Through perpetual investment strategies that outperform the market
+          Through real-time inventory intelligence that eliminates errors and boosts efficiency.
         </p>
 
         <Link className="contents max-sm:hidden" href="/#contact">

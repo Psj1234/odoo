@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,7 +12,7 @@ export default function LoginPage() {
   const { requestOTP, login, loading, error } = useAuth();
   const router = useRouter();
 
-  const handleRequestOTP = async (e: any) => {
+  const handleRequestOTP = async (e) => {
     e.preventDefault();
     const result = await requestOTP(phone);
     if (result.success) {
@@ -20,7 +20,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleVerifyOTP = async (e: any) => {
+  const handleVerifyOTP = async (e) => {
     e.preventDefault();
     const result = await login(phone, code);
     if (result.success) {
@@ -123,4 +123,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
