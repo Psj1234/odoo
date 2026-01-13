@@ -61,6 +61,16 @@ app.use('/api/profile', profileRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
+
+  // Check for database connection errors
+  if (err.name === 'PrismaClientInitializationError' || err.message.includes('Server has closed the connection')) {
+    return res.status(503).json({
+      success: false,
+      error: 'Database temporarily unavailable. The database may be suspended due to inactivity. Please try again in a few moments.',
+      code: 'DATABASE_UNAVAILABLE'
+    });
+  }
+
   res.status(err.status || 500).json({
     success: false,
     error: err.message || 'Internal server error',

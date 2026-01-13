@@ -22,25 +22,31 @@ export function Hero() {
           Through real-time inventory intelligence that eliminates errors and boosts efficiency.
         </p>
 
-        <Link className="contents max-sm:hidden" href="/#contact">
+        <a 
+          className="contents max-sm:hidden" 
+          href={process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:5173/login'}
+        >
           <Button
             className="mt-14"
             onMouseEnter={() => setHovering(true)}
             onMouseLeave={() => setHovering(false)}
           >
-            [Contact Us]
+            [Get Started]
           </Button>
-        </Link>
-        <Link className="contents sm:hidden" href="/#contact">
+        </a>
+        <a 
+          className="contents sm:hidden" 
+          href={process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:5173/login'}
+        >
           <Button
             size="sm"
             className="mt-14"
             onMouseEnter={() => setHovering(true)}
             onMouseLeave={() => setHovering(false)}
           >
-            [Contact Us]
+            [Get Started]
           </Button>
-        </Link>
+        </a>
       </div>
     </div>
   );

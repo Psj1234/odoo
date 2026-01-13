@@ -20,9 +20,9 @@ import {
 import api from '../lib/api';
 
 const COLORS = {
-  primary: '#3B82F6', // soft blue
-  secondary: '#10B981', // muted green
-  accent: '#6366F1', // navy blue
+  primary: '#3B82F6',
+  secondary: '#10B981',
+  accent: '#6366F1',
   amber: '#F59E0B',
   red: '#EF4444',
   purple: '#8B5CF6',
@@ -375,4 +375,6 @@ export default function Analytics() {
     </div>
   );
 }
+
+
 
