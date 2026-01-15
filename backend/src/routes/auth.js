@@ -1,10 +1,15 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../server.js';
+import twilio from 'twilio';
 
 const router = express.Router();
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
-// Request OTP
+// Request OTP (Twilio)
 router.post('/request-otp', async (req, res, next) => {
   try {
     const { phone } = req.body;
@@ -16,18 +21,21 @@ router.post('/request-otp', async (req, res, next) => {
       });
     }
 
-    // Skip external OTP providers for now — always respond success.
+    // Send OTP using Twilio Verify
+    await twilioClient.verify.v2.services(process.env.TWILIO_VERIFY_SERVICE_SID)
+      .verifications.create({ to: phone, channel: 'sms' });
+
     return res.json({
       success: true,
-      message: 'OTP sent (mock)',
-      sessionId: 'mock_session_' + Date.now()
+      message: 'OTP sent',
+      sessionId: phone // phone is used as sessionId for verification
     });
   } catch (error) {
     next(error);
   }
 });
 
-// Verify OTP
+// Verify OTP (Twilio)
 router.post('/verify-otp', async (req, res, next) => {
   try {
     const { phone, code, sessionId } = req.body;
@@ -39,8 +47,18 @@ router.post('/verify-otp', async (req, res, next) => {
       });
     }
 
-    // Accept any OTP code for now — bypass external verification.
-    // Find or create user. If Prisma/DB isn't available, fall back to a mock user.
+    // Verify OTP using Twilio Verify
+    const verificationCheck = await twilioClient.verify.v2.services(process.env.TWILIO_VERIFY_SERVICE_SID)
+      .verificationChecks.create({ to: phone, code });
+
+    if (verificationCheck.status !== 'approved') {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid OTP code'
+      });
+    }
+
+    // Find or create user
     let user;
     try {
       user = await prisma.user.findUnique({ where: { phone } });
@@ -83,6 +101,5 @@ router.post('/verify-otp', async (req, res, next) => {
     next(error);
   }
 });
-
 export default router;
 

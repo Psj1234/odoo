@@ -1,21 +1,26 @@
-# StockMaster - Modular Inventory Management System
 
-A production-grade, real-time Inventory Management System built for an 8-hour hackathon. Replaces manual registers and Excel with a fully automated, multi-warehouse inventory tracking solution.
+<div align="center">
+	<h1>StockMaster</h1>
+	<p><b>Modular Inventory Management System</b></p>
+	<p>Production-grade, real-time inventory management for modern businesses.<br>
+	Automate, track, and optimize your inventory across multiple warehouses.</p>
+</div>
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+
-- npm or yarn
+- <b>Node.js</b> v18 or higher
+- <b>PostgreSQL</b> v14 or higher
+- <b>npm</b> or <b>yarn</b>
 
 ### Backend Setup
 ```bash
 cd backend
 npm install
-cp .env.example .env
-# Configure your .env with database and Twilio credentials
-npx prisma migrate dev
+# Edit .env with your database and Twilio credentials
+npx prisma migrate deploy
 npm run dev
 ```
 
@@ -23,36 +28,53 @@ npm run dev
 ```bash
 cd frontend
 npm install
-cp .env.example .env
 npm run dev
 ```
+
+---
 
 ## 📁 Project Structure
 
 ```
 stockmaster/
-├── backend/          # Node.js + Express + Prisma
-├── frontend/         # React + Vite + Tailwind
-└── docs/            # Documentation
+├── backend/   # Node.js, Express, Prisma ORM
+├── frontend/  # React, Vite, Tailwind CSS
+└── docs/      # Documentation & guides
 ```
 
-## 🎯 Features
+---
 
-- ✅ OTP-based authentication
-- ✅ Real-time dashboard with KPIs
-- ✅ Multi-warehouse support
-- ✅ Automated stock updates
-- ✅ Receipts, Deliveries, Transfers, Adjustments
-- ✅ Complete move history ledger
-- ✅ Low stock alerts
-- ✅ Advanced filtering and search
+## 🎯 Key Features
+
+- OTP-based authentication (secure login)
+- Real-time dashboard with KPIs
+- Multi-warehouse management
+- Automated stock updates
+- Receipts, deliveries, transfers, adjustments
+- Complete move history ledger
+- Low stock alerts
+- Advanced filtering and search
+
+---
 
 ## 📚 Documentation
 
-See `/docs` folder for:
+Comprehensive documentation is available in the [`/docs`](docs) folder:
 - Executive Project Overview
 - API Documentation
 - Deployment Guide
 - UI/UX Design Specs
 - Pitch Script
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Please open an issue or submit a pull request.
+
+---
+
+## 🛡️ License
+
+This project is licensed under the MIT License.
 
