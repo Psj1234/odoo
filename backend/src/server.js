@@ -26,10 +26,16 @@ const PORT = process.env.PORT || 5000;
 export const prisma = new PrismaClient();
 
 // Middleware
-const allowedOrigins = [process.env.CORS_ORIGIN || 'http://localhost:5173', 'http://localhost:3000'];
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://odoo-ivory.vercel.app',
+  process.env.CORS_ORIGIN
+].filter(Boolean);
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g., curl, mobile apps)
+    // Allow requests with no origin (e.g., curl, mobile apps, Postman)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
     return callback(new Error('Not allowed by CORS'));

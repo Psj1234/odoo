@@ -27,7 +27,7 @@ export default function Products() {
     try {
       const params = { page: 1, limit: 50 };
       if (search) params.search = search;
-      const response = await api.get('/products', { params });
+      const response = await api.get('/api/products', { params });
       setProducts(response.data.data);
     } catch (error) {
       console.error('Failed to load products:', error);
@@ -38,7 +38,7 @@ export default function Products() {
 
   const loadCategories = async () => {
     try {
-      const response = await api.get('/categories');
+      const response = await api.get('/api/categories');
       setCategories(response.data.data);
     } catch (error) {
       console.error('Failed to load categories:', error);
@@ -75,10 +75,10 @@ export default function Products() {
     e.preventDefault();
     try {
       if (editingProduct) {
-        await api.put(`/products/${editingProduct.id}`, formData);
+        await api.put(`/api/products/${editingProduct.id}`, formData);
         alert('Product updated successfully!');
       } else {
-        await api.post('/products', formData);
+        await api.post('/api/products', formData);
         alert('Product created successfully!');
       }
       setShowModal(false);

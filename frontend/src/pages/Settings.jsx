@@ -35,7 +35,7 @@ export default function Settings() {
 
   const loadWarehouses = async () => {
     try {
-      const response = await api.get('/warehouses');
+      const response = await api.get('/api/warehouses');
       setWarehouses(response.data.data);
       if (response.data.data.length > 0 && !selectedWarehouse) {
         setSelectedWarehouse(response.data.data[0].id);
@@ -49,7 +49,7 @@ export default function Settings() {
 
   const loadLocations = async (warehouseId) => {
     try {
-      const response = await api.get('/locations', { params: { warehouseId } });
+      const response = await api.get('/api/locations', { params: { warehouseId } });
       setLocations(response.data.data);
     } catch (error) {
       console.error('Failed to load locations:', error);
@@ -77,10 +77,10 @@ export default function Settings() {
     e.preventDefault();
     try {
       if (editingWarehouse) {
-        await api.put(`/warehouses/${editingWarehouse.id}`, warehouseForm);
+        await api.put(`/api/warehouses/${editingWarehouse.id}`, warehouseForm);
         alert('Warehouse updated successfully!');
       } else {
-        await api.post('/warehouses', warehouseForm);
+        await api.post('/api/warehouses', warehouseForm);
         alert('Warehouse created successfully!');
       }
       setShowWarehouseModal(false);
@@ -95,7 +95,7 @@ export default function Settings() {
       return;
     }
     try {
-      await api.delete(`/warehouses/${id}`);
+      await api.delete(`/api/warehouses/${id}`);
       alert('Warehouse deleted successfully!');
       loadWarehouses();
     } catch (error) {
@@ -127,10 +127,10 @@ export default function Settings() {
     e.preventDefault();
     try {
       if (editingLocation) {
-        await api.put(`/locations/${editingLocation.id}`, locationForm);
+        await api.put(`/api/locations/${editingLocation.id}`, locationForm);
         alert('Location updated successfully!');
       } else {
-        await api.post('/locations', {
+        await api.post('/api/locations', {
           ...locationForm,
           warehouseId: selectedWarehouse
         });
@@ -148,7 +148,7 @@ export default function Settings() {
       return;
     }
     try {
-      await api.delete(`/locations/${id}`);
+      await api.delete(`/api/locations/${id}`);
       alert('Location deleted successfully!');
       loadLocations(selectedWarehouse);
     } catch (error) {

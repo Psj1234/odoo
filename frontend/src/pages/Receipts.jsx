@@ -30,7 +30,7 @@ export default function Receipts() {
 
   const loadReceipts = async () => {
     try {
-      const response = await api.get('/receipts', { params: { page: 1, limit: 50 } });
+      const response = await api.get('/api/receipts', { params: { page: 1, limit: 50 } });
       setReceipts(response.data.data);
     } catch (error) {
       console.error('Failed to load receipts:', error);
@@ -41,7 +41,7 @@ export default function Receipts() {
 
   const loadWarehouses = async () => {
     try {
-      const response = await api.get('/warehouses');
+      const response = await api.get('/api/warehouses');
       setWarehouses(response.data.data);
     } catch (error) {
       console.error('Failed to load warehouses:', error);
@@ -50,7 +50,7 @@ export default function Receipts() {
 
   const loadProducts = async () => {
     try {
-      const response = await api.get('/products', { params: { page: 1, limit: 100 } });
+      const response = await api.get('/api/products', { params: { page: 1, limit: 100 } });
       setProducts(response.data.data);
     } catch (error) {
       console.error('Failed to load products:', error);
@@ -59,7 +59,7 @@ export default function Receipts() {
 
   const loadLocations = async (warehouseId) => {
     try {
-      const response = await api.get('/locations', { params: { warehouseId } });
+      const response = await api.get('/api/locations', { params: { warehouseId } });
       setLocations(response.data.data);
     } catch (error) {
       console.error('Failed to load locations:', error);
@@ -103,7 +103,7 @@ export default function Receipts() {
       return;
     }
     try {
-      await api.post('/receipts', formData);
+      await api.post('/api/receipts', formData);
       alert('Receipt created successfully!');
       setShowModal(false);
       loadReceipts();
@@ -117,7 +117,7 @@ export default function Receipts() {
       return;
     }
     try {
-      await api.post(`/receipts/${id}/validate`);
+      await api.post(`/api/receipts/${id}/validate`);
       loadReceipts();
       alert('Receipt validated successfully!');
     } catch (error) {

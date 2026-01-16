@@ -21,8 +21,8 @@ export default function Dashboard() {
   const loadData = async () => {
     try {
       const [kpisRes, recentRes] = await Promise.all([
-        api.get('/dashboard/kpis'),
-        api.get('/dashboard/recent?limit=10'),
+        api.get('/api/dashboard/kpis'),
+        api.get('/api/dashboard/recent?limit=10'),
       ]);
       setKpis(kpisRes.data.data);
       setRecent(recentRes.data.data);

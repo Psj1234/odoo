@@ -31,7 +31,7 @@ export default function Deliveries() {
 
   const loadDeliveries = async () => {
     try {
-      const response = await api.get('/deliveries', { params: { page: 1, limit: 50 } });
+      const response = await api.get('/api/deliveries', { params: { page: 1, limit: 50 } });
       setDeliveries(response.data.data);
     } catch (error) {
       console.error('Failed to load deliveries:', error);
@@ -42,7 +42,7 @@ export default function Deliveries() {
 
   const loadWarehouses = async () => {
     try {
-      const response = await api.get('/warehouses');
+      const response = await api.get('/api/warehouses');
       setWarehouses(response.data.data);
     } catch (error) {
       console.error('Failed to load warehouses:', error);
@@ -51,7 +51,7 @@ export default function Deliveries() {
 
   const loadProducts = async () => {
     try {
-      const response = await api.get('/products', { params: { page: 1, limit: 100 } });
+      const response = await api.get('/api/products', { params: { page: 1, limit: 100 } });
       setProducts(response.data.data);
     } catch (error) {
       console.error('Failed to load products:', error);
@@ -60,7 +60,7 @@ export default function Deliveries() {
 
   const loadLocations = async (warehouseId) => {
     try {
-      const response = await api.get('/locations', { params: { warehouseId } });
+      const response = await api.get('/api/locations', { params: { warehouseId } });
       setLocations(response.data.data);
     } catch (error) {
       console.error('Failed to load locations:', error);
@@ -105,7 +105,7 @@ export default function Deliveries() {
       return;
     }
     try {
-      await api.post('/deliveries', formData);
+      await api.post('/api/deliveries', formData);
       alert('Delivery created successfully!');
       setShowModal(false);
       loadDeliveries();
@@ -119,7 +119,7 @@ export default function Deliveries() {
       return;
     }
     try {
-      await api.post(`/deliveries/${id}/validate`);
+      await api.post(`/api/deliveries/${id}/validate`);
       loadDeliveries();
       alert('Delivery validated successfully!');
     } catch (error) {

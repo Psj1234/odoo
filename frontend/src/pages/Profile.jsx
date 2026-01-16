@@ -14,7 +14,7 @@ export default function Profile() {
     setLoading(true);
     setMessage('');
     try {
-      const response = await api.put('/profile', { name, phone });
+      const response = await api.put('/api/profile', { name, phone });
       updateUser(response.data.data);
       setMessage('Profile updated successfully!');
     } catch (error) {

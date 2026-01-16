@@ -30,7 +30,7 @@ export default function Adjustments() {
 
   const loadAdjustments = async () => {
     try {
-      const response = await api.get('/adjustments', { params: { page: 1, limit: 50 } });
+      const response = await api.get('/api/adjustments', { params: { page: 1, limit: 50 } });
       setAdjustments(response.data.data);
     } catch (error) {
       console.error('Failed to load adjustments:', error);
@@ -41,7 +41,7 @@ export default function Adjustments() {
 
   const loadWarehouses = async () => {
     try {
-      const response = await api.get('/warehouses');
+      const response = await api.get('/api/warehouses');
       setWarehouses(response.data.data);
     } catch (error) {
       console.error('Failed to load warehouses:', error);
@@ -50,7 +50,7 @@ export default function Adjustments() {
 
   const loadProducts = async () => {
     try {
-      const response = await api.get('/products', { params: { page: 1, limit: 100 } });
+      const response = await api.get('/api/products', { params: { page: 1, limit: 100 } });
       setProducts(response.data.data);
     } catch (error) {
       console.error('Failed to load products:', error);
@@ -59,7 +59,7 @@ export default function Adjustments() {
 
   const loadLocations = async (warehouseId) => {
     try {
-      const response = await api.get('/locations', { params: { warehouseId } });
+      const response = await api.get('/api/locations', { params: { warehouseId } });
       setLocations(response.data.data);
     } catch (error) {
       console.error('Failed to load locations:', error);
@@ -107,7 +107,7 @@ export default function Adjustments() {
       return;
     }
     try {
-      await api.post('/adjustments', formData);
+      await api.post('/api/adjustments', formData);
       alert('Adjustment created successfully! Stock has been updated.');
       setShowModal(false);
       loadAdjustments();

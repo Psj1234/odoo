@@ -50,7 +50,7 @@ export default function Analytics() {
 
   const loadAnalytics = async () => {
     try {
-      const response = await api.get('/dashboard/analytics');
+      const response = await api.get('/api/dashboard/analytics');
       setData(response.data.data);
     } catch (error) {
       console.error('Failed to load analytics:', error);

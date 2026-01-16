@@ -11,7 +11,7 @@ export default function Ledger() {
 
   const loadLedger = async () => {
     try {
-      const response = await api.get('/ledger', { params: { page: 1, limit: 100 } });
+      const response = await api.get('/api/ledger', { params: { page: 1, limit: 100 } });
       setEntries(response.data.data);
     } catch (error) {
       console.error('Failed to load ledger:', error);

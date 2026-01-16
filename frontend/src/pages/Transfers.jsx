@@ -38,7 +38,7 @@ export default function Transfers() {
 
   const loadTransfers = async () => {
     try {
-      const response = await api.get('/transfers', { params: { page: 1, limit: 50 } });
+      const response = await api.get('/api/transfers', { params: { page: 1, limit: 50 } });
       setTransfers(response.data.data);
     } catch (error) {
       console.error('Failed to load transfers:', error);
@@ -49,7 +49,7 @@ export default function Transfers() {
 
   const loadWarehouses = async () => {
     try {
-      const response = await api.get('/warehouses');
+      const response = await api.get('/api/warehouses');
       setWarehouses(response.data.data);
     } catch (error) {
       console.error('Failed to load warehouses:', error);
@@ -58,7 +58,7 @@ export default function Transfers() {
 
   const loadProducts = async () => {
     try {
-      const response = await api.get('/products', { params: { page: 1, limit: 100 } });
+      const response = await api.get('/api/products', { params: { page: 1, limit: 100 } });
       setProducts(response.data.data);
     } catch (error) {
       console.error('Failed to load products:', error);
@@ -67,7 +67,7 @@ export default function Transfers() {
 
   const loadLocations = async (warehouseId, type) => {
     try {
-      const response = await api.get('/locations', { params: { warehouseId } });
+      const response = await api.get('/api/locations', { params: { warehouseId } });
       if (type === 'from') {
         setFromLocations(response.data.data);
       } else {
@@ -120,7 +120,7 @@ export default function Transfers() {
       return;
     }
     try {
-      await api.post('/transfers', formData);
+      await api.post('/api/transfers', formData);
       alert('Transfer created successfully!');
       setShowModal(false);
       loadTransfers();
@@ -134,7 +134,7 @@ export default function Transfers() {
       return;
     }
     try {
-      await api.post(`/transfers/${id}/validate`);
+      await api.post(`/api/transfers/${id}/validate`);
       loadTransfers();
       alert('Transfer validated successfully!');
     } catch (error) {
