@@ -10,7 +10,7 @@ const useAuthStore = create((set) => ({
   login: async (phone, code) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.post('/auth/verify-otp', { phone, code });
+      const response = await api.post('/api/auth/verify-otp', { phone, code });
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
@@ -28,7 +28,7 @@ const useAuthStore = create((set) => ({
   requestOTP: async (phone) => {
     set({ loading: true, error: null });
     try {
-      await api.post('/auth/request-otp', { phone });
+      await api.post('/api/auth/request-otp', { phone });
       set({ loading: false });
       return { success: true };
     } catch (error) {
