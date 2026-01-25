@@ -1,7 +1,7 @@
 # Database Setup Guide
 
 ## Required Tables
-//comment
+
 The Prisma schema already includes all required tables:
 
 1. ✅ **User** - User accounts and authentication
